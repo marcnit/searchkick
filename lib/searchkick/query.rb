@@ -730,7 +730,9 @@ module Searchkick
       (where || {}).each do |field, value|
         field = :_id if field.to_s == "id"
 
-        if field == :or
+        if field == :nested
+            filters << {nested: {path: value[:path], query: where_filters(value[:query])}}
+        elsif field == :or
           value.each do |or_clause|
             filters << {bool: {should: or_clause.map { |or_statement| {bool: {filter: where_filters(or_statement)}} }}}
           end
